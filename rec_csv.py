@@ -1,19 +1,25 @@
 #!/usr/bin/python
 #Rev. 14/01/2016
+#Rev. 29/07/2016
 
-#split_in_two
-#usage eg: python rec_csv.py 4002
+#split_in_two, make robust for l or u band receivers (or any)
+#usage eg: python rec_csv.py rxl_RecGain.csv rxl_RecNoise.csv 4002
 
 import csv     # imports the csv module
 import sys      # imports the sys module
 
-ifile1 = open('rxl_RecGain.csv','rb')
-ifile2 = open('rxl_RecNoise.csv','rb')
+#files to read
+gain_files=sys.argv[1] # e.g. 'rxl_RecGain.csv'
+noise_files=sys.argv[2] # e.g. 'rxl_RecNoise.csv'
+rx_band=gain_files[2]
+ifile1 = open('rx' +rx_band+ '_RecGain.csv','rb')
+ifile2 = open('rx' +rx_band+ '_RecNoise.csv','rb')
 
-serial=sys.argv[1] # e.g. '4001'
+serial=sys.argv[3] # e.g. '4001'
 
-ofile_h = open('RxL_SN' + serial + '_calculated_noise_H_chan.dat', 'w')
-ofile_v = open('RxL_SN' + serial + '_calculated_noise_V_chan.dat', 'w')
+#files to be written
+ofile_h = open('Rx' +rx_band.upper()+ '_SN' + serial + '_calculated_noise_H_chan.dat', 'w')
+ofile_v = open('Rx' +rx_band.upper()+ '_SN' + serial + '_calculated_noise_V_chan.dat', 'w')
 
 writer_h = csv.writer(ofile_h, delimiter=',', quotechar='"')
 writer_v = csv.writer(ofile_v, delimiter=',', quotechar='"')
