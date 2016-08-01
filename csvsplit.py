@@ -19,8 +19,8 @@ ofile_h  = open('rx.' +rx_band+ '.' +serial+ '.h.csv', "w")
 
 ofile_v  = open('rx.' +rx_band+ '.' +serial+ '.v.csv', "w")
 
-writer_h = csv.writer(ofile_h, delimiter=',', quotechar='"')
-writer_v = csv.writer(ofile_v, delimiter=',', quotechar='"')
+writer_h = csv.writer(ofile_h, delimiter=',', quotechar='"', lineterminator='\n')
+writer_v = csv.writer(ofile_v, delimiter=',', quotechar='"', lineterminator='\n')
 
 try:
     reader = csv.reader(ifile)  # creates the reader object
