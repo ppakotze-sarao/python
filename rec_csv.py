@@ -21,8 +21,8 @@ serial=sys.argv[3] # e.g. '4001'
 ofile_h = open('Rx' +rx_band.upper()+ '_SN' + serial + '_calculated_noise_H_chan.dat', 'w')
 ofile_v = open('Rx' +rx_band.upper()+ '_SN' + serial + '_calculated_noise_V_chan.dat', 'w')
 
-writer_h = csv.writer(ofile_h, delimiter=',', quotechar='"')
-writer_v = csv.writer(ofile_v, delimiter=',', quotechar='"')
+writer_h = csv.writer(ofile_h, delimiter=',', quotechar='"', lineterminator='\n')
+writer_v = csv.writer(ofile_v, delimiter=',', quotechar='"', lineterminator='\n')
 
 try:
     reader_gain = csv.reader(ifile1)  # creates the reader object
