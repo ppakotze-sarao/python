@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import sys
 
 receptor=sys.argv[1] # e.g. 'm015'
-serial=sys.argv[2] # e.g. '4001'
+serial=sys.argv[2] # e.g. 'l.4001'
 
 f_scale=1e6
 #mask
@@ -25,8 +25,8 @@ Hpol_noise = genfromtxt('Hpol_noise.csv', delimiter=',')
 Vpol_noise = genfromtxt('Vpol_noise.csv', delimiter=',')
 
 #EMSS receiver noise diode models
-Hpol_rx_ndmodel = genfromtxt('rx.l.'+serial+'.h.csv', delimiter=',')
-Vpol_rx_ndmodel = genfromtxt('rx.l.'+serial+'.v.csv', delimiter=',')
+Hpol_rx_ndmodel = genfromtxt('rx.'+serial+'.h.csv', delimiter=',')
+Vpol_rx_ndmodel = genfromtxt('rx.'+serial+'.v.csv', delimiter=',')
 
 #Hpolf = [10**(item/10) for item in Hpol[60:]]
 #fr for frequency response
