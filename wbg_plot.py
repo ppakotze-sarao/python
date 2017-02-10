@@ -1,5 +1,6 @@
 #!/usr/bin/python
 #Rev. 15/04/2016
+#added support for UHF rx, need to specify l or u before serial number.
 
 #Open files and plot with mask
 #usage eg: python wbg_plot.py receptor rx_serial
