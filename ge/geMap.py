@@ -98,16 +98,7 @@ kml_footer="""
 </kml>
 
 """
-#kml lines of coordinates
-kml_line_start="""
 
-<!--Separate line of coordinates start-->
-"""
-#kml lines of coordinates
-
-kml_line_stop="""
-
-<!--Separate line of coordinates stop-->"""
 
 #%Convert to Decimal degrees
 #from math import pi, floor, sqrt, sin, cos, asin, atan2
@@ -116,7 +107,12 @@ from numpy import pi, floor, sqrt, sin, cos
 from numpy import arcsin as asin
 from numpy import arctan2 as atan2
 
+#what is a coordStr ?
+#coordStr is GE compatible text string of long,lat,altitude
 def coordStr2Arr(coordText):
+    """
+        Convert to array from coordStr
+        """
     rowText=''
     coordArray=[]
     for coordChar in coordText:
@@ -127,15 +123,22 @@ def coordStr2Arr(coordText):
             rowText=rowText+coordChar
     return(coordArray)
 
+#what is a coordArr ?
 def coordArr2Str(coordArray):
+    """
+        Convert to string from coordArr
+        """
     coordText=''
     for arrayItem in coordArray:
         coordText=coordText+str(arrayItem)+' '
     return(coordText)
 
+#It says Lat but can do Long as well ?
+#GE uses decimal degrees
 def ToDecDeg(LatH, LatM, LatS):
     """
         Convert to decimal degrees from HMS
+	Accepts LatH, LatM, LatS and converts them to float before calculation
         """
     if LatH > 0:
         LatDec = float(LatH)+float(LatM)/60+float(LatS)/3600
@@ -143,18 +146,36 @@ def ToDecDeg(LatH, LatM, LatS):
         LatDec = float(LatH)-float(LatM)/60-float(LatS)/3600
     return(LatDec)
 
-def ToHMSDeg(LatDec):
+#Does not accept strings ?
+def ToHMSDeg(decimalDeg):
     """
     Convert to HMS from decimal degrees
+    
     For the Python 2.x series / does "floor division" for integers and longs (e.g. 5/2=2) 
     but "true division" for floats and complex (e.g. 5.0/2.0=2.5). 
     For Python 3.x, / does "true division" for all types.
     """
+    LatDec=float(decimalDeg)    
     LatH = floor(LatDec)
     LatM = floor((LatDec-LatH)*60)
     LatS = round((LatDec-LatH-LatM/60)*3600)
-    return(LatH, LatM, LatS)
+    return(LatH, LatM, LatS )
     
+#Does not accept strings ?
+def ToDMSstr(decimalDeg):
+    """
+    Convert to HMS from decimal degrees
+    
+    For the Python 2.x series / does "floor division" for integers and longs (e.g. 5/2=2) 
+    but "true division" for floats and complex (e.g. 5.0/2.0=2.5). 
+    For Python 3.x, / does "true division" for all types.
+    """
+    LatDec=float(decimalDeg)    
+    LatH = floor(LatDec)
+    LatM = floor((LatDec-LatH)*60)
+    LatS = round((LatDec-LatH-LatM/60)*3600)
+    return('%02dd %02dm %02ds') % (LatH , LatM, LatS)
+
 def caaDecDeg(caaStr):
     """
     Takes CAA string format e.g. S341740.00 E0193130.00
@@ -184,11 +205,13 @@ def caaDecDeg(caaStr):
         print 'Fault processing CAA long string'
     return (ToDecDeg(long_deg, long_min, long_sec)),(ToDecDeg(lat_deg, lat_min, lat_sec )) 
     
+#coords offset and bearing from a reference point
 def coordsFrom((lat1deg),(lon1deg),(thetadeg),d):
     """
         Returns co-ordinates at an offset and bearing from a reference coordinate point
          d     = distance in meters from Lat1,Lon1
          Theta = true angle in degrees from Lat1,Lon1
+
          lat2 = asin(sin(lat1)*cos(d/R) + cos(lat1)*sin(d/R)*cos(?)) 
          lon2 = lon1 + atan2(sin(?)*sin(d/R)*cos(lat1), cos(d/R)-sin(lat1)*sin(lat2)) 
          d/R is the angular distance (in radians), where d is the distance travelled 
@@ -227,6 +250,7 @@ def coordsFrom((lat1deg),(lon1deg),(thetadeg),d):
     return([lat2deg, lon2deg])
     #%52deg58'52?N, 000deg53'15?E
 
+#Generates one point for a circle?
 def genCirclePoint(centreLat, centreLon, circleAngle, circleRadius, circleAlt):
     """
     Gen coordinates for a circle point
@@ -238,6 +262,7 @@ def genCirclePoint(centreLat, centreLon, circleAngle, circleRadius, circleAlt):
     newLine = [newLon] + [newLat] + [float(circleAlt)]
     return(newLine)
 
+#Generates circle?
 def genCircle(centreLat, centreLon, circleRadius, circleAlt):
     """
     Gen coordinates for a circle point
@@ -250,6 +275,7 @@ def genCircle(centreLat, centreLon, circleRadius, circleAlt):
         circleText=circleText+str(circleLine[0])+','+str(circleLine[1])+','+str(circleLine[2])+' '
     return circleText       
        
+#Generates complete circle?  What is the difference?
 def genCircleComp(centreLL, circleRadius, circleAlt):
     """
     Gen coordinates for a circle point
@@ -262,10 +288,12 @@ def genCircleComp(centreLL, circleRadius, circleAlt):
         circleText=circleText+str(circleLine[0])+','+str(circleLine[1])+','+str(circleLine[2])+' '
     return circleText       
 
+#Generate only an arc
 def genArc(centreLat, centreLon, arcRadius, arcAlt, LL, RL, DL):
     """
-    Gen coordinates for a circle
+    Gen coordinates for an Arc
     expect decimal lat longs
+    returns text
     """
     arcText=''
     for angle in range(0,360):
@@ -277,14 +305,40 @@ def genArc(centreLat, centreLon, arcRadius, arcAlt, LL, RL, DL):
              arcText=arcText+str(circleLine[0])+','+str(circleLine[1])+','+str(circleLine[2])+' '
     return arcText
 
+#This appears to be within a GE coordinates withing a point within placemark, could also be within paths
+#encapsulate comment around GE compatible coordinates
 def encapPlace(coordStr):
     """
-    Gen coordinates for a circle
-    expect decimal lat longs
+    Gen coordinates for a place
+    expect coordStr
     """
-    placeTxt=kml_line_start + str(coordStr) + kml_line_stop
+    #kml lines of coordinates
+    kml_line_start="""
+    <!--Separate line of coordinates start-->
+    """ 
+    #kml lines of coordinates
+    kml_line_stop="""
+    <!--Separate line of coordinates stop-->"""
+    placeTxt = kml_line_start + str(coordStr) + kml_line_stop
     return placeTxt
 
+#added 10 Feb 2017 for individual placemarks
+def genPlacemark(name, coordStr):
+    """
+    Gen placemark from a name, coordinateString
+    expect coordStr
+    """
+    build_str="""	
+                <Placemark>
+			<name>""" + name + """</name>
+			<Point>
+				<coordinates>""" + coordStr + """,0 </coordinates>
+			</Point>
+		</Placemark> \n"""
+    return(build_str)
+
+
+#What is a coordstr? A GE text string of long,lat,alt
 def genCoordStr(coordDecTuple, coordAlt):
     """
     Gen coordStr from Tuple and coordAlt floats returns string
@@ -292,6 +346,7 @@ def genCoordStr(coordDecTuple, coordAlt):
     return (str(coordDecTuple[0]) +',' +str(coordDecTuple[1]) +',' +str(coordAlt) +' ' )
 
 	
+#Appears to be heading and distance between two coordinates
 def calcHeading(lat1deg, lon1deg, lat2deg, lon2deg):
     """
     http://www.movable-type.co.uk/scripts/latlong.html
