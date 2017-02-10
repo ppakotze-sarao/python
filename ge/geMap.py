@@ -10,42 +10,9 @@ nm = 1852 #1nm = 1852 meters
 m_to_ft=3.2808399
 
 #KML header used before - origin?
-kml_header="""
-<kml>
-<Document>
-	<Style id="sh_ylw-pushpin">
-		<IconStyle>
-			<scale>1.2</scale>
-		</IconStyle>
-		<LineStyle>
-			<color>ff0000ff</color>
-			<width>5</width>
-		</LineStyle>
-	</Style>
-	<StyleMap id="msn_ylw-pushpin">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#sn_ylw-pushpin</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#sh_ylw-pushpin</styleUrl>
-		</Pair>
-	</StyleMap>
-	<Style id="sn_ylw-pushpin">
-		<LineStyle>
-			<color>ff0000ff</color>
-			<width>5</width>
-		</LineStyle>
-	</Style>
-     
-     <Placemark>
-      <styleUrl>#msn_ylw-pushpin</styleUrl>
-        <LineString>
-        			<extrude>1</extrude>
-			<tessellate>1</tessellate>
-			<altitudeMode>absolute</altitudeMode>       
-               <coordinates>
+kml_header="""<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
  """
 
 kml_header2="""
@@ -87,14 +54,7 @@ kml_header2="""
  """
  
 #KML footer used before - origin?
-kml_footer="""
-        
-        </coordinates>
-        
-        </LineString>
-    </Placemark>
-
-</Document>
+kml_footer="""  </Document>
 </kml>
 
 """
@@ -328,11 +288,10 @@ def genPlacemark(name, coordStr):
     Gen placemark from a name, coordinateString
     expect coordStr
     """
-    build_str="""	
-                <Placemark>
+    build_str="""		<Placemark>
 			<name>""" + name + """</name>
 			<Point>
-				<coordinates>""" + coordStr + """,0 </coordinates>
+				<coordinates>""" + coordStr + """ </coordinates>
 			</Point>
 		</Placemark> \n"""
     return(build_str)
