@@ -1,7 +1,9 @@
 #%example simple restricted area
 #clear all;
 #close all;
-#%Date 2008/09/08
+#%Date 2017/02/13
+#Added botswana AIP lat long format to decimal degree function: aipDecDeg
+# realise distance is in meters!
 
 #%conversion factors
 #%1 meter = 3.2808399feet 
@@ -97,10 +99,10 @@ def coordArr2Str(coordArray):
 #GE uses decimal degrees
 def ToDecDeg(LatH, LatM, LatS):
     """
-        Convert to decimal degrees from HMS
-	Accepts LatH, LatM, LatS and converts them to float before calculation
+        Convert to decimal degrees from HMS (float)
+		Accepts LatH, LatM, LatS and converts them to float before calculation
         """
-    if LatH > 0:
+    if float(LatH) > 0:
         LatDec = float(LatH)+float(LatM)/60+float(LatS)/3600
     else:
         LatDec = float(LatH)-float(LatM)/60-float(LatS)/3600
@@ -124,7 +126,7 @@ def ToHMSDeg(decimalDeg):
 #Does not accept strings ?
 def ToDMSstr(decimalDeg):
     """
-    Convert to HMS from decimal degrees
+    Convert to DegMS from decimal degrees
     
     For the Python 2.x series / does "floor division" for integers and longs (e.g. 5/2=2) 
     but "true division" for floats and complex (e.g. 5.0/2.0=2.5). 
@@ -136,11 +138,40 @@ def ToDMSstr(decimalDeg):
     LatS = round((LatDec-LatH-LatM/60)*3600)
     return('%02dd %02dm %02ds') % (LatH , LatM, LatS)
 
+def aipDecDeg(aipStr):
+    """
+    Takes Botswana AIP string format e.g. 174957.88S 0251011.51E (lat then long)
+    and returns decimal degrees float lat, long
+	"""
+    if aipStr[9]=='S':
+        lat_deg='-'+aipStr[0:2]
+        lat_min=aipStr[2:4]
+        lat_sec=aipStr[4:9]
+    elif aipStr[9]=='N':
+        lat_deg=aipStr[0:2]
+        lat_min=aipStr[2:4]
+        lat_sec=aipStr[4:9]
+    else:
+        print 'Fault processing AIP lat string'
+    
+    if aipStr[21]=='E':
+        long_deg=aipStr[11:14]
+        long_min=aipStr[14:16]
+        long_sec=aipStr[16:21]
+    elif aipStr[21]=='W':
+        long_deg='-'+aipStr[11:14]
+        long_min=aipStr[14:16]
+        long_sec=aipStr[16:21]
+    else:
+        print 'Fault processing AIP long string'
+    return ToDecDeg(lat_deg, lat_min, lat_sec ), ToDecDeg(long_deg, long_min, long_sec)
+    
 def caaDecDeg(caaStr):
     """
     Takes CAA string format e.g. S341740.00 E0193130.00
     and returns (-34,17,40)
     (deg,min,seconds)
+	this still does long lat !!!
     """
     if caaStr[0]=='S':
         lat_deg='-'+caaStr[1:3]
@@ -164,7 +195,7 @@ def caaDecDeg(caaStr):
     else:
         print 'Fault processing CAA long string'
     return (ToDecDeg(long_deg, long_min, long_sec)),(ToDecDeg(lat_deg, lat_min, lat_sec )) 
-    
+	
 #coords offset and bearing from a reference point
 def coordsFrom((lat1deg),(lon1deg),(thetadeg),d):
     """
@@ -255,7 +286,11 @@ def genArc(centreLat, centreLon, arcRadius, arcAlt, LL, RL, DL):
     """
     Gen coordinates for an Arc
     expect decimal lat longs
-    returns text
+    Limits to arc:
+	 DL >= latitude (N/S),a down limit in decimal degrees
+	 LL >= longitude (E/W), a left limit in decimal degrees
+	 RL <= longitude (E/W), a right limit in decimal degrees
+	returns coordinates as str - no kml wrapper
     """
     arcText=''
     for angle in range(0,360):
@@ -312,6 +347,7 @@ def genLineString(name, coordArr):
 		</Placemark> \n"""
     return(build_str)
 #What is a coordstr? A GE text string of long,lat,alt
+
 def genCoordStr(coordDecTuple, coordAlt):
     """
     Gen coordStr from Tuple and coordAlt floats returns string
