@@ -71,7 +71,7 @@ from numpy import arctan2 as atan2
 #coordStr is GE compatible text string of long,lat,altitude
 def coordStr2Arr(coordText):
     """
-        Convert to array from coordStr
+        Convert to array from coordStr but must be a list of coordinates separated by space
         """
     rowText=''
     coordArray=[]
@@ -210,11 +210,12 @@ def coordsFrom((lat1deg),(lon1deg),(thetadeg),d):
     return([lat2deg, lon2deg])
     #%52deg58'52?N, 000deg53'15?E
 
-#Generates one point for a circle?
+#Generates one point for a circle?\
 def genCirclePoint(centreLat, centreLon, circleAngle, circleRadius, circleAlt):
     """
     Gen coordinates for a circle point
     expect decimal lat longs
+    returns one point as string?
     """
     newLatLon=coordsFrom( float(centreLat), float(centreLon) , float(circleAngle), float(circleRadius) )
     newLat=newLatLon[0]
@@ -226,7 +227,8 @@ def genCirclePoint(centreLat, centreLon, circleAngle, circleRadius, circleAlt):
 def genCircle(centreLat, centreLon, circleRadius, circleAlt):
     """
     Gen coordinates for a circle point
-    expect decimal lat longs
+    expect decimal lat longs    
+    returns array of points as string
     """
     circleText=''   
     for angle in range(360):
@@ -291,12 +293,24 @@ def genPlacemark(name, coordStr):
     build_str="""		<Placemark>
 			<name>""" + name + """</name>
 			<Point>
-				<coordinates>""" + coordStr + """ </coordinates>
+				<coordinates>""" + str(coordStr) + """ </coordinates>
 			</Point>
 		</Placemark> \n"""
     return(build_str)
 
-
+#added 10 Feb 2017 for paths
+def genLineString(name, coordArr):
+    """
+    Gen placemark from a name, coordinateString
+    expect coordStr
+    """
+    build_str="""		<Placemark>
+			<name>""" + name + """</name>
+			<LineString>
+				<coordinates>""" + str(coordArr) + """ </coordinates>
+			</LineString>
+		</Placemark> \n"""
+    return(build_str)
 #What is a coordstr? A GE text string of long,lat,alt
 def genCoordStr(coordDecTuple, coordAlt):
     """
