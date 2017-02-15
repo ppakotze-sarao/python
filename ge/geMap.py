@@ -118,7 +118,7 @@ def ToHMSDeg(decimalDeg):
     For Python 3.x, / does "true division" for all types.
     """
     LatDec=float(decimalDeg)    
-    LatH = floor(LatDec)
+    LatH = int(LatDec)
     LatM = floor((LatDec-LatH)*60)
     LatS = round((LatDec-LatH-LatM/60)*3600)
     return(LatH, LatM, LatS )
