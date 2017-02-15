@@ -133,7 +133,7 @@ def ToDMSstr(decimalDeg):
     For Python 3.x, / does "true division" for all types.
     """
     LatDec=float(decimalDeg)    
-    LatH = floor(LatDec)
+    LatH = int(LatDec)
     LatM = floor((LatDec-LatH)*60)
     LatS = round((LatDec-LatH-LatM/60)*3600)
     return('%02dd %02dm %02ds') % (LatH , LatM, LatS)
