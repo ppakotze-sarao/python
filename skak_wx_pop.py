@@ -7,6 +7,8 @@ import telnetlib
 import time
 import math
 import aviation_wx
+import re
+import time
 
 work_dir = '/home/pkotze/tmp/'
 
@@ -20,11 +22,13 @@ class stationData():
   self.air_pressure = 'None'
   self.raw_list = []
 
+
  def stripVal(self, var ): 
   """
   For a string selects only the sensor value and returns as a float
   """
   return float(var.split('\n')[0].split(' ')[-1])
+
 
  def stripDate(self, var ): 
   """
@@ -32,6 +36,7 @@ class stationData():
   """
   return float(var.split('\n')[0].split(' ')[1])
  
+
  def processVal(self): 
   return(
    'VR041 ' + aviation_wx.metarTime(self.raw_list[5]) + 'AUTO '+ 
@@ -39,8 +44,9 @@ class stationData():
    aviation_wx.wind_METAR( [self.raw_list[1],self.raw_list[1],self.raw_list[1],self.raw_list[1]], [self.raw_list[0],self.raw_list[0],self.raw_list[0],self.raw_list[0]]) + 
    aviation_wx.metarTemp( self.raw_list[2]) + '/' + 
    aviation_wx.metarTemp( aviation_wx.toDewpoint( self.raw_list[3], self.raw_list[2] ) ) + ' ' +
-   'Q' + '%04i' % round( aviation_wx.toQNH( self.raw_list[4], 1044.55 ) ) + '=' +
-   ' *** Image -> http://www.qsl.net/zs1pk/oneshotimage.jpg *** Refresh browser!\n')
+   'Q' + '%04i' % round( aviation_wx.toQNH( self.raw_list[4], 1044.55 ) ) + '=' +   
+#   ' *** Image -> http://www.qsl.net/zs1pk/oneshotimage.jpg *** Refresh browser!\n')
+'\n')
 
 
 
@@ -54,11 +60,12 @@ class stationData():
   self.stripDate(self.wind_speed) ] #get time '%02i'%ts[2]+'%02i'%ts[3]+'%02i'%ts[4]+'Z'
   )
 
+
  def getRawdata(self): 
   """
   gets Raw Data 
   """  
-  HOST = "192.168.193.4"  #asc enviro
+  HOST = "10.97.8.2"  #asc enviro
   PORT = '1251'
   wait = 0.1
 
@@ -68,23 +75,32 @@ class stationData():
  
   tn.write("?sensor-value wind.direction\n")
   time.sleep(wait)
-  self.wind_direction=tn.read_very_eager()
+#  self.wind_direction=tn.read_very_eager()
+#  self.wind_direction=tn.expect(['#sensor-value(.*)$'])[2]
+#  koos=''
+#  print tn.expect(['#sensor-value !'],2)[2]
+#  self.wind_direction=tn.read_until('!sensor-value ok')
+  self.wind_direction=tn.read_until('!sensor-value ok 1\n')
+
+# #sensor-value 1492700272.712095 1 wind.direction nominal 39.384
+# !sensor-value ok 1
+
   
   tn.write("?sensor-value wind.speed\n")
   time.sleep(wait)
-  self.wind_speed=tn.read_very_eager()
+  self.wind_speed=tn.read_until('!sensor-value ok 1\n')
 
   tn.write("?sensor-value air.temperature\n")
   time.sleep(wait)
-  self.air_temperature=tn.read_very_eager()
+  self.air_temperature=tn.read_until('!sensor-value ok 1\n')
 
   tn.write("?sensor-value air.relative-humidity\n")
   time.sleep(wait)
-  self.air_humidity=tn.read_very_eager()
+  self.air_humidity=tn.read_until('!sensor-value ok 1\n')
 
   tn.write("?sensor-value air.pressure\n")
   time.sleep(wait)
-  self.air_pressure=tn.read_very_eager()
+  self.air_pressure=tn.read_until('!sensor-value ok 1\n')
 
   tn.close()
 
