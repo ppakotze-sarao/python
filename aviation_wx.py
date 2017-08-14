@@ -151,8 +151,8 @@ def saveMetar(save_file, save_txt):
  f = open(save_file, 'r+')
  #use to read entire file and add new line to the top
  #old_content = f.read()
- for i in range(0,38):  #now only save last 40 lines
-	old_content = f.next()
+ old_content=''
+ for i in range(0,18):  #now only save last 40 lines
 	old_content = old_content + f.next()
  f.seek(0, 0)
  f.write(save_txt + old_content)
