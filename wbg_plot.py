@@ -14,9 +14,14 @@ serial=sys.argv[2] # e.g. 'l.4001'
 
 f_scale=1e6
 #mask
-ulim=-124.3+10*log10(3e6)
-mask_f = [0,200e6/f_scale,420e6/f_scale,2150e6/f_scale,2900e6/f_scale,3600e6/f_scale]
-mask_a = [ulim-21, ulim-21, ulim, ulim, ulim-21, ulim-21]
+if serial[0] == 'l':
+ ulim=-124.3+10*log10(3e6)
+ mask_f = [0,200e6/f_scale,420e6/f_scale,2150e6/f_scale,2900e6/f_scale,3600e6/f_scale]
+ mask_a = [ulim-21, ulim-21, ulim, ulim, ulim-21, ulim-21]
+elif serial[0] == 'u':
+ ulim=-124.3+10*log10(3e6)
+ mask_f = [0,100e6/f_scale,300e6/f_scale,1200e6/f_scale,NaN,1620e6/f_scale,3600e6/f_scale]
+ mask_a = [ulim-13, ulim-13, ulim, ulim,NaN, ulim-13, ulim-13]
 
 #Spectrum analyser data
 Inst = genfromtxt('Instrument.csv', delimiter=',')
