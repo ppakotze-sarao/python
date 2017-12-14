@@ -1,7 +1,8 @@
 #!/usr/bin/python
 #Rev. 15/04/2016
 #added support for UHF rx, need to specify l or u before serial number.
-
+#Rev. 14/12/2017
+#added UHF minimum signal level (also for L-band)
 #Open files and plot with mask
 #usage eg: python wbg_plot.py receptor rx_serial
 
@@ -18,10 +19,16 @@ if serial[0] == 'l':
  ulim=-124.3+10*log10(3e6)
  mask_f = [0,200e6/f_scale,420e6/f_scale,2150e6/f_scale,2900e6/f_scale,3600e6/f_scale]
  mask_a = [ulim-21, ulim-21, ulim, ulim, ulim-21, ulim-21]
+ dlim=-134.6+10*log10(3e6)
+ dmask_f = [900e6/f_scale,1670e6/f_scale]
+ dmask_a = [dlim,dlim]
 elif serial[0] == 'u':
- ulim=-124.3+10*log10(3e6)
- mask_f = [0,100e6/f_scale,300e6/f_scale,1200e6/f_scale,NaN,1620e6/f_scale,3600e6/f_scale]
+ ulim=-122.7+10*log10(3e6)
+ mask_f = [0,100e6/f_scale,300e6/f_scale,1200e6/f_scale,NaN,1610e6/f_scale,3600e6/f_scale]
  mask_a = [ulim-13, ulim-13, ulim, ulim,NaN, ulim-13, ulim-13]
+ dlim=-137.3+10*log10(3e6)
+ dmask_f = [580e6/f_scale,1015e6/f_scale]
+ dmask_a = [dlim,dlim]
 
 #Spectrum analyser data
 Inst = genfromtxt('Instrument.csv', delimiter=',')
@@ -63,6 +70,7 @@ plt.plot(Vpol[60:,0]/f_scale, Vpol[60:,1], label='Vpol', color='green')
 #plt.plot(Hpol_noise_fr[:,0]/f_scale, Hpol_noise_fr[:,1], label='Hpol noise', linestyle='--', color='red')
 #plt.plot(Vpol_noise_fr[:,0]/f_scale, Vpol_noise_fr[:,1], label='Vpol noise', linestyle='--', color='green')
 plt.plot(mask_f, mask_a, label='Mask', color='black')
+plt.plot(dmask_f, dmask_a, label='Mask', color='orange', linestyle=':')
 plt.grid()
 plt.legend()
 plt.ylim([-110,-50])
