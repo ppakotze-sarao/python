@@ -160,11 +160,20 @@ def saveMetar(save_file, save_txt):
 
 def ftpMetar(file_name, file_txt): 
  import ftplib
+ '''
  ftp_host = 'www.qsl.net'
  ftp_user = 'zs1pk'
  ftp_pass = 'hxh4fp24'
+'''
+ ftp_host = 'ftp.byethost13.com'
+ ftp_user = 'b13_22261597'
+ ftp_pass = 'wagwoord'
+ ftp_host = 'files.000webhost.com'
+ ftp_user = 'ppakotze'
+ ftp_pass = 'wagwoord'
  ftp_file=open(file_name,'rb')
  ftp_session = ftplib.FTP(ftp_host, ftp_user, ftp_pass)
+ ftp_session.cwd('/public_html')
  ftp_session.storbinary('STOR ' + file_txt, ftp_file)
  ftp_session.quit()
  ftp_file.close()
