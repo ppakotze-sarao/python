@@ -47,6 +47,13 @@ Hpol_fr = Hpol[60:]
 Vpol_fr = Vpol[60:]
 Hpol_noise_fr = Hpol_noise[60:]
 Vpol_noise_fr = Vpol_noise[60:]
+# If ND resolution is poor, resample it to uniform resolution approximately matching that of the S/A
+if (mean(diff(Hpol_rx_ndmodel[:,0])) > 10e6): # > 10 MHz qualifies as "poor"
+    fh = linspace(Hpol_rx_ndmodel[0,0], Hpol_rx_ndmodel[-1,0], mean(diff(Hpol_fr[:,0])))
+    Hpol_rx_ndmodel_1 = interp( fh, Hpol_rx_ndmodel[:,0] , Hpol_rx_ndmodel[:,1])
+    Hpol_rx_ndmodel = c_[fh, Hpol_rx_ndmodel_1]
+    Vpol_rx_ndmodel_1 = interp( fh, Vpol_rx_ndmodel[:,0] , Vpol_rx_ndmodel[:,1])
+    Vpol_rx_ndmodel = c_[fh, Vpol_rx_ndmodel_1]
 #Get noise diode models frequency range
 fh = Hpol_rx_ndmodel[:,0]  
 fv = Vpol_rx_ndmodel[:,0]  
