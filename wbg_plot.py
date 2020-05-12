@@ -5,6 +5,8 @@
 #added UHF minimum signal level (also for L-band)
 #Open files and plot with mask
 #usage eg: python wbg_plot.py receptor rx_serial
+#Rev. 14/3/2019
+#hardcoded local checkout directory of receiver models...
 
 from numpy import *
 import matplotlib.pyplot as plt
@@ -38,8 +40,12 @@ Hpol_noise = genfromtxt('Hpol_noise.csv', delimiter=',')
 Vpol_noise = genfromtxt('Vpol_noise.csv', delimiter=',')
 
 #EMSS receiver noise diode models
-Hpol_rx_ndmodel = genfromtxt('rx.'+serial+'.h.csv', delimiter=',')
-Vpol_rx_ndmodel = genfromtxt('rx.'+serial+'.v.csv', delimiter=',')
+Hpol_rx_ndmodel = genfromtxt('/home/pkotze/checkouts/katconfig/user/noise-diode-models/mkat/rx.'+serial+'.h.csv', delimiter=',')
+Vpol_rx_ndmodel = genfromtxt('/home/pkotze/checkouts/katconfig/user/noise-diode-models/mkat/rx.'+serial+'.v.csv', delimiter=',')
+#temporary change below to process M045 UHF when using own derived noise diode models
+
+#Hpol_rx_ndmodel = genfromtxt('/home/pkotze/python/rx.'+serial+'.h.csv', delimiter=',')
+#Vpol_rx_ndmodel = genfromtxt('/home/pkotze/python/rx.'+serial+'.v.csv', delimiter=',')
 
 #Hpolf = [10**(item/10) for item in Hpol[60:]]
 #fr for frequency response
@@ -58,7 +64,7 @@ Tsysh = Hpol_rx_ndmodel[:,1]/(Yh-1)
 Tsysv = Vpol_rx_ndmodel[:,1]/(Yv-1)
 
 #Plot Wide band gain (and save a png)
-plt.close('all')
+
 plt.figure(figsize=(20,10))
 plt.ylabel('Amplitude [dBm]')
 plt.xlabel('Frequency [MHz]')
@@ -90,4 +96,21 @@ plt.grid()
 plt.ylim([10,50])
 #plt.xlim([0,3.6e9])
 plt.savefig(receptor+'_T_sys')
+
+
+plt.figure(figsize=(20,10))
+plt.ylabel('T_noise_diode [K]')
+plt.xlabel('Frequency [MHz]')
+plt.title(receptor)
+plt.plot(Hpol_rx_ndmodel[:,0], Hpol_rx_ndmodel[:,1], label='Tsys h', color='red')
+plt.plot(Vpol_rx_ndmodel[:,0], Vpol_rx_ndmodel[:,1], label='Tsys v', color='green')
+plt.legend()
+plt.grid()
+plt.ylim([10,50])
+plt.axhline(y=31, color='r', linestyle='-')
+plt.axhline(y=13, color='r', linestyle='-')
+
+#plt.xlim([0,3.6e9])
+
+plt.show()
 

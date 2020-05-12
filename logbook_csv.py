@@ -31,7 +31,7 @@ for row in worksheet1.iter_rows():
 		lrow.append(cell.value.encode('utf-8')) #force unicode to utf-8
 	else:
 		lrow.append((cell.value))
-      # print(lrow)
+      print(lrow)
       wr.writerow(lrow) #need to check if csv writer is utf-8?
 print('Done')
 your_csv_file.close()   

@@ -8,9 +8,14 @@ MKT = (geMap.ToDecDeg(-30,42,46.53), geMap.ToDecDeg(21,26,37.69))
 NE = (geMap.ToDecDeg(-30,27,59.12), geMap.ToDecDeg(21,52,56.02))
 SW = (geMap.ToDecDeg(-31,4,8.89), geMap.ToDecDeg(21,7,25.94))
 
-R50_sect=geMap.genArcSeg(MKT, 50*1000, 20001*.3, SW, NE)
-R50_sectu=geMap.genArcSeg(MKT, 50*1000, 65000*.3, SW, NE)
+#R50_sect=geMap.genArcSeg(MKT, 50*1000, 20001*.3, SW, NE)
+#R50_sectu=geMap.genArcSeg(MKT, 50*1000, 65000*.3, SW, NE)
+#R50_sect3d=geMap.gen3D(R50_sect,65000*.3)
+
+R50_sect=geMap.genArcSeg(MKT, 48*1000, 20001*.3, SW, NE)
+R50_sectu=geMap.genArcSeg(MKT, 48*1000, 65000*.3, SW, NE)
 R50_sect3d=geMap.gen3D(R50_sect,65000*.3)
+
 
 #R30_low = polycircles.Polycircle(latitude=MKT[0],
 #			longitude=MKT[1],

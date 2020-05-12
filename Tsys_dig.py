@@ -76,7 +76,7 @@ Vpol_noise = genfromtxt(receptor+'_'+dig_serial+'_V_Pol_sw_spec_dump_'+csv_hott,
 #Vpol_rx_ndmoon = genfromtxt('/home/pkotze/python/rx.'+serial+'.v.csv', delimiter=',')
 
 ymin=-70
-ymax=-50
+ymax=-40
 ystep=5
 
 #plt.ion()

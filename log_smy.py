@@ -12,7 +12,8 @@ import re        #for fancier text matching
 
 #files to read
 logbook_f  = sys.argv[1] # e.g 'logbook.csv'
-input_date = sys.argv[2] if len(sys.argv[2]) > 0 else [1903,12,17] # e.g. '12'for number of months
+#input_date = sys.argv[2] if len(sys.argv[2]) > 0 else [1903,12,17] # e.g. '12'for number of months
+input_date = sys.argv[2] # '1903-12-17' 
 output_f   = sys.argv[3] # e.g. '12month.txt'
 ac_type    = sys.argv[4]
 
