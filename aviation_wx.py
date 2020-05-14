@@ -85,7 +85,9 @@ def maxDiff(arr, arr_size):
         for j in range( i+1, arr_size ): 
             if phase_diff(arr[i],arr[j]) > max_diff:  
                 max_diff = phase_diff(arr[i],arr[j])
-    return max_diff
+                max_dir=max(arr[i],arr[j])  #trying to find the varying direction max angle
+                min_dir=max(arr[i],arr[j])  #and then the min
+    return max_diff,min_dir,max_dir
     
 def wind_METAR(wind_speed, wind_direc):
  """
@@ -99,10 +101,10 @@ def wind_METAR(wind_speed, wind_direc):
  speed_gust = toKnots(np.max(moving_Avg(wind_speed, 5)))# peak average over 5s for last *10 minutes* assuming data stored in 1s intervals
  gust_delta = speed_gust - speed_mean #already in knots
  direc_mean = phase_avg(wind_direc) #wind direction only in 5s intervals
- direc_min = np.min(wind_direc)
- direc_max = np.max(wind_direc)
- direc_var = maxDiff(wind_direc,len(wind_direc))
- #((direc_min-direc_max)%360, (direc_max-direc_min)%360) 
+ #direc_min = np.min(wind_direc)
+ #direc_max = np.max(wind_direc)
+ direc_var,direc_min,direc_max = maxDiff(wind_direc,len(wind_direc))
+ #((direc_min-direc_max)%360, (direc_max-direc_min)%360) :
  #np.max(wind_direc) - np.min(wind_direc) #this looks like a bug but with wind direction like phase you have to be careful and unwrap?
  #print speed_mean, speed_gust, direc_mean, direc_var
  wind_var_str = ''
