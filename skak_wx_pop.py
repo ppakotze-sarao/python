@@ -60,6 +60,6 @@ if __name__ == '__main__':
     metar_txt = faska.processSensors()
     #Debug:
     #print(metar_txt)
-    aviation_wx.saveMetar(work_dir / 'vr041_metar.txt', metar_txt)
-    aviation_wx.ftpMetar(work_dir / 'vr041_metar.txt', 'vr041.txt','files.000webhost.com','ppakotze','wagwoord')
+    aviation_wx.saveMetar(Path(__file__).parents[0] / work_dir / 'vr041_metar.txt', metar_txt)
+    aviation_wx.ftpMetar(Path(__file__).parents[0] / work_dir / 'vr041_metar.txt', 'vr041.txt','files.000webhost.com','ppakotze','wagwoord')
     #print('Upload done')
