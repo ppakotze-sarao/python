@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.6
 #Rev. 21/6/2016 - stripped down version -> no working retrieve sensor data
 #Rev. 14/5/2020 - major rewrite to retrieve data from katstore
 import datetime
