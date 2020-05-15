@@ -86,7 +86,7 @@ def maxDiff(arr, arr_size):
             if phase_diff(arr[i],arr[j]) > max_diff:  
                 max_diff = phase_diff(arr[i],arr[j])
                 max_dir=max(arr[i],arr[j])  #trying to find the varying direction max angle
-                min_dir=max(arr[i],arr[j])  #and then the min
+                min_dir=min(arr[i],arr[j])  #and then the min
     return max_diff,min_dir,max_dir
     
 def wind_METAR(wind_speed, wind_direc):
@@ -128,6 +128,8 @@ def wind_METAR(wind_speed, wind_direc):
  return wind_direc_str + wind_speed_str + wind_var_str + ' '
 
 def saveMetar(save_file, save_txt): 
+    #constants
+    total_lines=6*24
     #open file 
     f = open(save_file, 'r+')
     #get all lines
@@ -136,11 +138,11 @@ def saveMetar(save_file, save_txt):
     f.write(save_txt)
     #Debug
     #print(len(lines))
-    if len(lines) < 20:
+    if len(lines) < total_lines:
         for line in lines:
             f.write(line)
     else:
-        for i in range(0,19):
+        for i in range(0,total_lines-1):
             f.write(lines[i])
     f.close()
 
