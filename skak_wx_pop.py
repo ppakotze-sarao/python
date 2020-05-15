@@ -32,9 +32,9 @@ class stationData():
         dtnow_m10 = dtnow - datetime.timedelta(minutes=10)
             
         self.timestamp = dtnow_utc
-        self.air_temperature = sensor_data_pvsn('anc_weather_temperature', dtnow_m2, dtnow)[2]
-        self.air_humidity = sensor_data_pvsn('anc_weather_humidity', dtnow_m2, dtnow)[2]
-        self.air_pressure =sensor_data_pvsn('anc_weather_pressure', dtnow_m2, dtnow)[2]
+        self.air_temperature = sensor_data_pvsn('anc_weather_temperature', dtnow_m10, dtnow)[2]
+        self.air_humidity = sensor_data_pvsn('anc_weather_humidity', dtnow_m10, dtnow)[2]
+        self.air_pressure =sensor_data_pvsn('anc_weather_pressure', dtnow_m10, dtnow)[2]
         self.wind_speed = sensor_data_pvsn('anc_wind_wind_speed', dtnow_m10, dtnow)[2]
         self.wind_direction = sensor_data_pvsn('anc_wind_wind_direction', dtnow_m2, dtnow)[2]
         
