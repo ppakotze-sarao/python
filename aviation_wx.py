@@ -115,7 +115,10 @@ def wind_METAR(wind_speed, wind_direc):
   wind_direc_str = 'VRB'
  elif speed_mean > WIND_LIMIT and (direc_var > 60) and (direc_var < 180):
   wind_direc_str = '%03i' % round(direc_mean, -1)
-  wind_var_str = ' ' + '%03i' % round(direc_min, -1) + 'V' + '%03i' % round(direc_max, -1)
+  if direc_max-direc_min <= 180:
+      wind_var_str = ' ' + '%03i' % round(direc_min, -1) + 'V' + '%03i' % round(direc_max, -1)
+  else:
+      wind_var_str = ' ' + '%03i' % round(direc_max, -1) + 'V' + '%031' % round(direc_min, -1)
  elif speed_mean > WIND_LIMIT and direc_var >= 180:
   wind_direc_str = 'VRB'
  else: # you get the value (should never see a 6??)
