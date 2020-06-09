@@ -124,6 +124,8 @@ def wind_METAR(wind_speed, wind_direc):
  else: # you get the value (should never see a 6??)
   wind_direc_str = '%03i' % round(direc_mean, -1)
  #Speed and kts
+ if wind_direc_str == '000':
+     wind_direc_str = '360'
  if gust_delta >= 10: # if gust present you need to add the gust
   wind_speed_str = '%02i' % round(speed_mean) + 'G' + '%02i' % speed_gust + 'KT'
  else:
