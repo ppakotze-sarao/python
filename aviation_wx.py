@@ -40,6 +40,7 @@ def toDewpoint(from_rh, at_Temp):
  Tdew = Tn /( (m / math.log( P_w / A, 10)) - 1 )
  return (Tdew)
 
+#hard coded VR041 airport elevation in m as default
 def toQNH(from_QFE, airport_h=1044.55):
  """
  Calculates QNH from QFE using simple ICAO method
@@ -75,19 +76,35 @@ def phase_avg(dataset):
     
 def phase_diff(angle1, angle2): 
     """
-    For wind direction assuming 0 deg is North, increasing clockwise to 359 degrees 
+    For wind direction assuming 0 deg is North, increasing clockwise to 359 degrees
     """
     return(min((angle1-angle2)%360, (angle2-angle1)%360))
     
 def maxDiff(arr, arr_size): 
-    max_diff = arr[1] - arr[0] 
+    '''
+    Cannot simply use max and min values in list as wind direction wraps at 360
+    Search through list to find max difference between current element and all others
+    If a new maximum difference found stored as max_diff
+    Also the elements compared must form the new maximum and new minimum value
+    '''
+    max_diff = arr[1] - arr[0] #initialise to first difference
     for i in range( 0, arr_size ): 
-        for j in range( i+1, arr_size ): 
-            if phase_diff(arr[i],arr[j]) > max_diff:  
-                max_diff = phase_diff(arr[i],arr[j])
-                max_dir=max(arr[i],arr[j])  #trying to find the varying direction max angle
-                min_dir=min(arr[i],arr[j])  #and then the min
+        for j in range( i+1, arr_size ): #only need to test remaining items in list
+            if phase_diff(arr[i],arr[j]) > max_diff:  #new max difference (angle) between elements in list
+                max_diff = phase_diff(arr[i],arr[j])  #new max difference (angle) between elements in list
+                max_dir=max(arr[i],arr[j])            #for this max_diff this is the max angle 
+                min_dir=min(arr[i],arr[j])            #for this max_diff this is the min angle 
     return max_diff,min_dir,max_dir
+
+def round_wind(wind_angle): 
+    """
+    Crude method to report windirection 0 as 360
+    """
+    wind_round_str = '%03i' % round(wind_angle, -1)
+    #clunky but don't want to see 000 unless it is calm
+    if wind_round_str == '000':
+      wind_round_str = '360'
+    return(wind_round_str)
     
 def wind_METAR(wind_speed, wind_direc):
  """
@@ -96,40 +113,43 @@ def wind_METAR(wind_speed, wind_direc):
  Output: metar compatible wind string
  We are assuming 10minutes worth of data stored at 1s intervals for windspeed and 5s intervals for winddirection
  """
- WIND_LIMIT = 3# #3kts converted to m/s
+ WIND_LIMIT = 3 #3kts after converted from m/s
+ 
  speed_mean = toKnots(np.mean(wind_speed[-121:-1])) #last 2 minutes of wind speed at interval of 1s
  speed_gust = toKnots(np.max(moving_Avg(wind_speed, 5)))# peak average over 5s for last *10 minutes* assuming data stored in 1s intervals
  gust_delta = speed_gust - speed_mean #already in knots
+ 
  direc_mean = phase_avg(wind_direc) #wind direction only in 5s intervals
- #direc_min = np.min(wind_direc)
- #direc_max = np.max(wind_direc)
+
  direc_var,direc_min,direc_max = maxDiff(wind_direc,len(wind_direc))
- #((direc_min-direc_max)%360, (direc_max-direc_min)%360) :
- #np.max(wind_direc) - np.min(wind_direc) #this looks like a bug but with wind direction like phase you have to be careful and unwrap?
- #print speed_mean, speed_gust, direc_mean, direc_var
+ #Debug: 
+ print(speed_mean, speed_gust, gust_delta)
+ print(direc_mean, direc_var,direc_min, direc_max)
+ 
  wind_var_str = ''
- #wind direction and maybe  VRB
+ #wind direction and maybe  VRB or CALM as 00000KT
  if speed_mean < 0.5:
   wind_direc_str = '000'
- elif speed_mean <= WIND_LIMIT and direc_var >= 60:
+ elif speed_mean >= 0.5 and speed_mean <= WIND_LIMIT and direc_var >= 60:
   wind_direc_str = 'VRB'
  elif speed_mean > WIND_LIMIT and (direc_var > 60) and (direc_var < 180):
-  wind_direc_str = '%03i' % round(direc_mean, -1)
+  wind_direc_str = round_wind(direc_mean)
+  #need to remind myself why this works 
   if direc_max-direc_min <= 180:
-      wind_var_str = ' ' + '%03i' % round(direc_min, -1) + 'V' + '%03i' % round(direc_max, -1)
+      wind_var_str = ' ' + round_wind(direc_min) + 'V' + round_wind(direc_max)
   else:
-      wind_var_str = ' ' + '%03i' % round(direc_max, -1) + 'V' + '%031' % round(direc_min, -1)
+      wind_var_str = ' ' + round_wind(direc_max) + 'V' + round_wind(direc_min)
  elif speed_mean > WIND_LIMIT and direc_var >= 180:
   wind_direc_str = 'VRB'
- else: # you get the value (should never see a 6??)
-  wind_direc_str = '%03i' % round(direc_mean, -1)
- #Speed and kts
- if wind_direc_str == '000':
-     wind_direc_str = '360'
+ else: # you get the value (wind stronger than  WIND_LIMIT but not varying)
+  wind_direc_str = round_wind(direc_mean)
+
+ #Now add Speed and (possibly gusts) then units of KT for knots
  if gust_delta >= 10: # if gust present you need to add the gust
   wind_speed_str = '%02i' % round(speed_mean) + 'G' + '%02i' % speed_gust + 'KT'
  else:
   wind_speed_str = '%02i' % round(speed_mean) + 'KT'
+
  return wind_direc_str + wind_speed_str + wind_var_str + ' '
 
 def saveMetar(save_file, save_txt): 
